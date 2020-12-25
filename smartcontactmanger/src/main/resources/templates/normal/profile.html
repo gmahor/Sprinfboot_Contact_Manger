@@ -12,12 +12,14 @@
 
 			<div class="card text-center">
 				<div class="card-body">
-				
-				<img src="" style="height: 200px; width: 200px;"
+
+					<img src="" style="height: 200px; width: 200px;"
 						class="my_profile_picture" th:src="@{'/img/'+${user.imageUrl}}"
 						alt="profile photo" />
-				
-				<h1 class="text-center"><span th:text="${user.name}"></span></h1>
+
+					<h1 class="text-center">
+						<span th:text="${user.name}"></span>
+					</h1>
 
 					<table class="table mt-4">
 						<thead>
@@ -56,6 +58,13 @@
 
 
 		</div>
+
+		<script>
+			$(document).ready(()=>{
+				$('.item').removeClass('active');
+				$('#profile-link').addClass("active");
+			});
+		</script>
 
 	</section>
 </body>

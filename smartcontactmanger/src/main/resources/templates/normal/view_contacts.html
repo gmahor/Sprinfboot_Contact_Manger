@@ -24,57 +24,59 @@
 
 					<h1 class="text-center">Your Contacts</h1>
 
-					
+
 					<!-- search -->
 					<div class="search-container my-3">
-					
-					<input onkeyup="search()" id="search-input" type="text" class="form-control" placeholder="Search your contacts" />
-					
-					<div class="search-result">
-					
-					<!-- result goes here -->
-					</div>
-					
-					</div>
-					
-					
-					
-					<table class="table" >
-						<thead class="thead-dark">
-							<tr>
-								<th scope="col">#Id</th>
-								<th scope="col">Name</th>
-								<th scope="col">Email</th>
-								<th scope="col">Phone</th>
-								<th scope="col">Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="c : ${contacts}">
-								<th scope="row" th:text="${c.cid}"></th>
-								<td><img src="" class="my_profile_picture"
-									th:src="@{'/img/'+${c.image}}" alt="profile photo" /> <span
-									th:text="${c.name}"></span></td>
-								<td><a href="#" th:href="@{'/user/'+${c.cid}+'/contact'}">
-										<span th:text="${c.email}"></span>
 
-								</a></td>
-								<td th:text="${c.phone}"></td>
-								<td>
-									<form action="#" method="post"
-										th:action="@{'/user/update/'+${c.cid}}">
-										<button type="submit" class="btn btn-success">Edit</button>
-									</form> <!-- a
+						<input onkeyup="search()" id="search-input" type="text"
+							class="form-control" placeholder="Search your contacts" />
+
+						<div class="search-result">
+
+							<!-- result goes here -->
+						</div>
+
+					</div>
+
+
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col">#Id</th>
+									<th scope="col">Name</th>
+									<th scope="col">Email</th>
+									<th scope="col">Phone</th>
+									<th scope="col">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="c : ${contacts}">
+									<th scope="row" th:text="${c.cid}"></th>
+									<td><img src="" class="my_profile_picture"
+										th:src="@{'/img/'+${c.image}}" alt="profile photo" /> <span
+										th:text="${c.name}"></span></td>
+									<td><a href="#" th:href="@{'/user/'+${c.cid}+'/contact'}">
+											<span th:text="${c.email}"></span>
+
+									</a></td>
+									<td th:text="${c.phone}"></td>
+									<td>
+										<form action="#" method="post"
+											th:action="@{'/user/update/'+${c.cid}}">
+											<button type="submit" class="btn btn-success">Edit</button>
+										</form> <!-- a
 									href="#" th:href="@{'/user/delete/'+${c.cid}}"
 									class="btn btn-danger">Delete</a> --> <a href="#"
-									th:onclick="|deleteContact(${c.cid})|"
-									class="btn btn-danger mt-1">Delete</a>
-								</td>
+										th:onclick="|deleteContact(${c.cid})|"
+										class="btn btn-danger mt-1">Delete</a>
+									</td>
 
-							</tr>
+								</tr>
 
-						</tbody>
-					</table>
+							</tbody>
+						</table>
+					</div>
 
 					<!-- pegination -->
 					<nav aria-label="Page navigation example">
@@ -107,6 +109,12 @@
 
 			</div>
 		</div>
+		<script>
+			$(document).ready(()=>{
+				$('.item').removeClass('active');
+				$('#contacts-link').addClass("active");
+			});
+		</script>
 
 	</section>
 

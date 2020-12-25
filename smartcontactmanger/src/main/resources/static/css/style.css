@@ -107,3 +107,10 @@ body {
 	border: 1px solid gray;
 	display: none;
 }
+
+/* sidebar-link */
+.active {
+	background: linear-gradient(to right, rgba(200, 0, 1, 0),
+		rgba(200, 0, 0, 1));
+	color: black !important;
+}

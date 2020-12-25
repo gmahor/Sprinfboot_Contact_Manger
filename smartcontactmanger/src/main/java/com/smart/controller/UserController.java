@@ -17,6 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,6 +40,9 @@ import com.smart.helper.Message;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -220,7 +224,7 @@ public class UserController {
 	// update contact handler
 	@RequestMapping(value = "/process-update", method = RequestMethod.POST)
 	public String updateContact(@ModelAttribute Contact contact, @RequestParam("profileimage") MultipartFile file,
-			Principal principal,HttpSession session) {
+			Principal principal, HttpSession session) {
 
 		try {
 			// old contact details
@@ -230,11 +234,10 @@ public class UserController {
 			if (!file.isEmpty()) {
 
 				// delete old photo
-				
+
 				File deleteFile = new ClassPathResource("static/img").getFile();
-				File file1 = new File(deleteFile,oldContactDetail.getImage());
+				File file1 = new File(deleteFile, oldContactDetail.getImage());
 				file1.delete();
-			
 
 				// Update new photo
 				File saveFile = new ClassPathResource("static/img").getFile();
@@ -255,7 +258,7 @@ public class UserController {
 			contact.setUser(user);
 
 			this.contactRepository.save(contact);
-			
+
 			session.setAttribute("message", new Message("Contact Updated Successfully !!", "alert-success"));
 
 		} catch (Exception e) {
@@ -266,13 +269,46 @@ public class UserController {
 		System.out.println("Contact Id : " + contact.getCid());
 		return "redirect:/user/" + contact.getCid() + "/contact";
 	}
-	
+
 	// your profile handler
 	@GetMapping("/profile")
 	public String yourProfile(Model model) {
-		model.addAttribute("title","Your profile" );
-		
+		model.addAttribute("title", "Your profile");
+
 		return "normal/profile";
+	}
+
+	// open setting handler
+	@GetMapping("/settings")
+	public String openSettings(Model model) {
+		model.addAttribute("title", "Settings");
+		return "normal/settings";
+	}
+
+	// change password handler
+	@PostMapping("/change-password")
+	public String changePassword(@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("newPassword") String newPassword, Principal principal, HttpSession session) {
+
+		User user = this.userRepository.getUserByUserName(principal.getName());
+
+		String password = user.getPassword();
+
+		if (this.bCryptPasswordEncoder.matches(oldPassword, password)) {
+			// change the password
+			user.setPassword(this.bCryptPasswordEncoder.encode(newPassword));
+			this.userRepository.save(user);
+			session.setAttribute("message", new Message("Password Changed Successfully !!", "alert-success"));
+
+			return "redirect:/logout";
+
+		} else {
+			// error....
+			session.setAttribute("message",
+					new Message("Pls try again your password is not matched !!", "alert-danger"));
+			return "redirect:/user/settings";
+		}
+
 	}
 	
 

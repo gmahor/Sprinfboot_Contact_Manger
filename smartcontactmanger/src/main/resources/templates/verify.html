@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="base::layout(~{::section})">
+<head>
+<meta charset="UTF-8" />
+<title></title>
+</head>
+<body>
+	<section class="banner">
+
+		<div
+			class="container d-flex justify-content-center align-items-center">
+			<div class="row">
+				<div class="col ">
+					<div class="my-card mt-3 ">
+
+						<div th:if="${session.message}"
+							th:classappend="${session.message.type}" class="alert "
+							role="alert">
+							<p class="text-center" th:text="${session.message.content}"></p>
+
+							<th:block th:text="${#session.removeAttribute('message')}"></th:block>
+						</div>
+
+						<h1 class="text-center ">
+							<b><u>Verifing</u></b>
+						</h1>
+
+						<form action="#" th:action="@{/verifyOpt-Process}" method="post">
+							<div class="form-group">
+								<input type="text" name="otp" class="form-control mb-3"
+									placeholder="Enter send otp." required />
+
+								<div class="container text-center">
+
+									<button type="submit" class="btn btn-success">Verify</button>
+
+								</div>
+
+							</div>
+
+
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+</body>
+</html>

@@ -1,5 +1,7 @@
 package com.smart.controller;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -28,6 +30,9 @@ public class HomeController {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private BCryptPasswordEncoder bcrypt;
 
 	// Home Handler
 	@RequestMapping("/")
@@ -103,4 +108,115 @@ public class HomeController {
 		return "login";
 	}
 
+	// forget password handler
+	@RequestMapping("/forget")
+	public String forgetPassword() {
+		return "forget";
+	}
+
+	// reset password
+	@RequestMapping("/verify-opt")
+	public String verifyOtp() {
+		return "verify";
+	}
+
+	@PostMapping("/verifyOpt-Process")
+	public String verifyOptProcess(@RequestParam("otp") int opt, HttpSession session) {
+
+		int myOtp = (int) session.getAttribute("myOtp");
+
+		String email = (String) session.getAttribute("email");
+
+//		System.out.println("myOtp : " + myOtp);
+//		System.out.println("email : " + email);
+
+		if (myOtp == opt) {
+
+			User user = this.userRepository.getUserByUserName(email);
+
+			if (user == null) {
+				// send error message if the person is not there in my DB
+				session.setAttribute("message", new Message("User does not exits with this emails..", "alert-danger"));
+
+				return "forget";
+
+			} else {
+
+				return "redirect:/reset-password";
+
+			}
+
+		} else {
+			session.setAttribute("message", new Message("Something went wrong. try again.", "alert-danger"));
+			return "verify";
+		}
+
+	}
+
+	@GetMapping("/reset-password")
+	public String resetPasswordForm() {
+		return "reset_password";
+	}
+
+	@PostMapping("/resetPassword-process")
+	public String resetPassword(@RequestParam("newpassword") String newpassword,
+			@RequestParam("confirm") String confirm, HttpSession session) {
+
+		if (newpassword.equals(confirm)) {
+
+			String email = (String) session.getAttribute("email");
+
+			User user = this.userRepository.getUserByUserName(email);
+
+			user.setPassword(this.bcrypt.encode(newpassword));
+
+			this.userRepository.save(user);
+
+			session.setAttribute("message", new Message("Password reset successfully..", "alert-success"));
+
+			return "login";
+
+		} else {
+			session.setAttribute("message", new Message("Something went wrong. try again..", "alert-danger"));
+			return "reset_password";
+		}
+	}
+
 }
+
+/*
+ * send link in email
+ * 
+ * @PostMapping("/resetprocess") public String
+ * resetProccess(@RequestParam("newpassword") String newpassword,
+ * 
+ * @RequestParam("confirm") String confirmP, HttpSession session) {
+ * 
+ * 
+ * String email = (String) session.getAttribute("email");
+ * 
+ * System.out.println(email);
+ * 
+ * System.out.println("New password : " + newpassword);
+ * System.out.println("Confirm password : " + confirmP);
+ * 
+ * if (newpassword.equals(confirmP)) {
+ * 
+ * // String email = (String) session.getAttribute("email"); // // User user =
+ * this.userRepository.getUserByUserName(email); // // String password =
+ * this.bcrypt.encode(newpassword); // // user.setPassword(password); // //
+ * this.userRepository.save(user);
+ * 
+ * session.setAttribute("message", new
+ * Message("New Password save successfully.", "alert-success"));
+ * 
+ * return "login";
+ * 
+ * } else {
+ * 
+ * session.setAttribute("message", new
+ * Message("Your password cant match. Try again..", "alert-danger")); return
+ * "reset";
+ * 
+ * }
+ */

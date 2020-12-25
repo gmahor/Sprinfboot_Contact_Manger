@@ -10,6 +10,12 @@
 
 		<div class="container">
 			<div class="card">
+				<div id="message" th:if="${session.message}"
+					th:classappend="${session.message.type}" class="alert mt-4" role="alert">
+					<p class="text-center" th:text="${session.message.content}"></p>
+
+					<th:block th:text="${#session.removeAttribute('message')}"></th:block>
+				</div>
 				<div class="card-body my-5">
 					<div class="container text-center">
 						<img src="#" style="height: 200px; width: 200px;"
@@ -29,6 +35,14 @@
 
 			</div>
 		</div>
+
+		<script>
+			$(document).ready(()=>{
+				$('.item').removeClass('active');
+				$('#home-link').addClass("active");
+			});
+		</script>
+
 
 	</section>
 </body>
